@@ -3,38 +3,62 @@
 import { useState } from 'react';
 import { Box, Typography, Button, Paper, List, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
 import CreateNewQuiz from './CreateNewQuiz';
-import AddQuestion from './AddQuestion';
+import { useRouter } from 'next/navigation';
 
-// Sample data (would come from backend)
 const initialQuizData = [
-    { quizId: 1, quizName: "Shreeji", helpingName: "Day-1 Bharuch", questionCount: 4 },
-    { quizId: 2, quizName: "Gunatit", helpingName: "Day-2 Gondal", questionCount: 7 },
-    { quizId: 3, quizName: "Pragji", helpingName: "Day-3 Gondal", questionCount: 0 }
+    {
+        quizId: 1,
+        quizName: "Shreeji",
+        helpingName: "Day-1 Bharuch",
+        questionCount: 2,
+        questions: [
+            {
+                questionId: 1,
+                question: "What is the capital of France?",
+                option1: "Paris",
+                option2: "London",
+                option3: "Berlin",
+                option4: "Madrid",
+                correctOption: "Paris"
+            },
+            {
+                questionId: 2,
+                question: "What is 2 + 2?",
+                option1: "4",
+                option2: "3",
+                option3: "5",
+                option4: "6",
+                correctOption: "4"
+            }
+        ]
+    },
+    {
+        quizId: 2,
+        quizName: "Gunatit",
+        helpingName: "Day-2 Gondal",
+        questionCount: 0,
+        questions: []
+    }
 ];
 
 export default function QuizCreate() {
     const [quizzes, setQuizzes] = useState(initialQuizData);
     const [showCreateNew, setShowCreateNew] = useState(false);
-    const [selectedQuiz, setSelectedQuiz] = useState<any>(null);
+    const router = useRouter();
 
     const handleAddQuiz = (newQuiz: { quizName: string; helpingName: string }) => {
-        // Simulate backend call
-        const newQuizData = { ...newQuiz, quizId: quizzes.length + 1, questionCount: 0 };
+        const newQuizData = { ...newQuiz, quizId: quizzes.length + 1, questionCount: 0, questions: [] };
         setQuizzes([...quizzes, newQuizData]);
         setShowCreateNew(false);
     };
 
-    const handleAddQuestion = (quizId: number) => {
-        // Simulate fetching updated data after adding question
-        const updatedQuizzes = quizzes.map(q =>
-            q.quizId === quizId ? { ...q, questionCount: q.questionCount + 1 } : q
-        );
-        setQuizzes(updatedQuizzes);
-        setSelectedQuiz(null);
+    const handleQuizClick = (quiz: any) => {
+        // Navigate to AllQuestions with quizId
+        router.push(`/quizCreate/allQuestions?quizId=${quiz.quizId}`);
     };
 
     return (
-        <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+        <Box sx={{ flexGrow: 1, overflow: 'auto', p: 1 }}>
             <Typography
                 variant="h5"
                 align="center"
@@ -44,7 +68,7 @@ export default function QuizCreate() {
             </Typography>
 
             {quizzes.length === 0 ? (
-                <Typography align="center" sx={{ mb: 2 }}>
+                <Typography align="center" sx={{ mb: 2, color: '#666' }}>
                     No quiz to display
                 </Typography>
             ) : (
@@ -53,15 +77,18 @@ export default function QuizCreate() {
                         <Paper
                             key={quiz.quizId}
                             elevation={2}
-                            sx={{ mb: 1, p: 2, cursor: 'pointer' }}
-                            onClick={() => setSelectedQuiz(quiz)}
+                            sx={{ mb: 1, p: 2, cursor: 'pointer', borderRadius: 2 }}
+                            onClick={() => handleQuizClick(quiz)}
                         >
                             <ListItem>
                                 <ListItemText
                                     primary={`${quiz.quizName} (${quiz.helpingName})`}
+                                    primaryTypographyProps={{ fontSize: '1.1rem' }}
                                 />
                                 <ListItemSecondaryAction>
-                                    <Typography>{quiz.questionCount} Qs</Typography>
+                                    <Typography sx={{ color: '#1976d2', fontWeight: 'bold' }}>
+                                        {quiz.questionCount} Qs
+                                    </Typography>
                                 </ListItemSecondaryAction>
                             </ListItem>
                         </Paper>
@@ -73,7 +100,7 @@ export default function QuizCreate() {
                 fullWidth
                 variant="contained"
                 onClick={() => setShowCreateNew(true)}
-                sx={{ mt: 2, py: 1.5, backgroundColor: '#1976d2' }}
+                sx={{ mt: 2, py: 1.5, backgroundColor: '#1976d2', borderRadius: 2 }}
             >
                 Add New Quiz
             </Button>
@@ -83,15 +110,6 @@ export default function QuizCreate() {
                 onClose={() => setShowCreateNew(false)}
                 onAdd={handleAddQuiz}
             />
-
-            {selectedQuiz && (
-                <AddQuestion
-                    open={!!selectedQuiz}
-                    onClose={() => setSelectedQuiz(null)}
-                    quiz={selectedQuiz}
-                    onAddQuestion={handleAddQuestion}
-                />
-            )}
         </Box>
     );
 }

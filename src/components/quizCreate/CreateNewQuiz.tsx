@@ -91,7 +91,7 @@ export default function CreateNewQuiz({ open, onClose, onAdd }: CreateNewQuizPro
                 open={openSnackbar}
                 autoHideDuration={3000}
                 onClose={() => setOpenSnackbar(false)}
-                anchorOrigin={{ vertical:"top", horizontal:'center' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert severity="success" onClose={() => setOpenSnackbar(false)}>
                     New quiz created successfully
